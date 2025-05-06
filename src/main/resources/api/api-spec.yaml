@@ -1,0 +1,56 @@
+openapi: 3.0.3
+info:
+  title: Aura Pagamento API
+  description: API do Microsserviço de Pagamento para o Sistema de Gerenciamento de Pagamentos
+  version: 1.0.0
+  contact:
+    name: Equipe Aura
+    email: equipe@aura.com.br
+servers:
+  - url: 'http://localhost:8006'
+    description: Servidor local
+tags:
+  - name: payments
+    description: Operações relacionadas a pagamentos
+
+paths:
+  /payments/:
+    get:
+      tags:
+        - payments
+      summary: List all payments
+      operationId: listPayments
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+        amount:
+          type: number
+        status:
+          type: string
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string

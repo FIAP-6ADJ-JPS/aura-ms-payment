@@ -1,0 +1,39 @@
+services:
+  # Product Microservice
+  payment_db:
+    image: postgres:13
+    container_name: payment_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: aura_ms_payment
+    ports:
+      - "5436:5432"
+    volumes:
+      - payment_pgdata:/var/lib/postgresql/data
+    networks:
+      - aura_network
+
+  payment_flyway:
+    image: flyway/flyway:10.12.0
+    container_name: payment_flyway
+    depends_on:
+      - payment_db
+    command: [
+      "migrate",
+      "-url=jdbc:postgresql://payment_postgres_db:5436/aura_ms_payment",
+      "-user=postgres",
+      "-password=postgres"
+    ]
+    volumes:
+      - ./aura-ms-payment/src/main/resources/db/migration:/flyway/sql
+    networks:
+      - aura_network
+
+networks:
+  aura_network:
+    driver: bridge
+
+volumes:
+  payment_pgdata:
