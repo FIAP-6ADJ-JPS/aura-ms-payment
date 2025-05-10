@@ -15,17 +15,24 @@ public class Payment {
     private LocalDateTime updatedAt;
 
     public Payment() {
-
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public Payment(Long id, String orderId, String cardNumber, BigDecimal amount, PaymentStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("O valor do pagamento deve ser maior que zero.");
+        }
+        if (cardNumber == null || cardNumber.isBlank()) {
+            throw new IllegalArgumentException("O número do cartão não pode ser vazio.");
+        }
         this.id = id;
         this.orderId = orderId;
         this.cardNumber = cardNumber;
         this.amount = amount;
-        this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.status = status != null ? status : PaymentStatus.PENDING;
+        this.createdAt = createdAt != null ? createdAt : LocalDateTime.now();
+        this.updatedAt = updatedAt != null ? updatedAt : LocalDateTime.now();
     }
 
     public Long getId() {
@@ -49,6 +56,9 @@ public class Payment {
     }
 
     public void setCardNumber(String cardNumber) {
+        if (cardNumber == null || cardNumber.isBlank()) {
+            throw new IllegalArgumentException("O número do cartão não pode ser vazio.");
+        }
         this.cardNumber = cardNumber;
     }
 
@@ -57,6 +67,9 @@ public class Payment {
     }
 
     public void setAmount(BigDecimal amount) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("O valor do pagamento deve ser maior que zero.");
+        }
         this.amount = amount;
     }
 
@@ -65,6 +78,9 @@ public class Payment {
     }
 
     public void setStatus(PaymentStatus status) {
+        if (status == null) {
+            throw new IllegalArgumentException("O status do pagamento não pode ser nulo.");
+        }
         this.status = status;
     }
 
