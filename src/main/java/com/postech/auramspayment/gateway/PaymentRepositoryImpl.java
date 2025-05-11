@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-import static org.modelmapper.Converters.Collection.map;
-
 @Service
 public class PaymentRepositoryImpl implements PaymentRepository {
 
