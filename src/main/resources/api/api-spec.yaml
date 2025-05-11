@@ -7,50 +7,114 @@ info:
     name: Equipe Aura
     email: equipe@aura.com.br
 servers:
-  - url: 'http://localhost:8006'
+  - url: 'http://localhost:8086'
     description: Servidor local
 tags:
   - name: payments
     description: Operações relacionadas a pagamentos
 
 paths:
-  /payments/:
-    get:
+  /payments/process:
+    post:
       tags:
         - payments
-      summary: List all payments
-      operationId: listPayments
+      summary: Processa um novo pagamento
+      operationId: processPayment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
       responses:
         '200':
-          description: Successful operation
+          description: Pagamento processado com sucesso
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Payment'
+                $ref: '#/components/schemas/PaymentResponse'
+        '400':
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
         '500':
           description: Erro interno do servidor
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/PaymentResponse'
+
+  /payments/{orderId}:
+    get:
+      tags:
+        - payments
+      summary: Obtém o status de um pagamento pelo ID do pedido
+      operationId: getPaymentStatus
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Status do pagamento obtido com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '400':
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
 
 components:
   schemas:
-    Payment:
+    PaymentRequest:
       type: object
+      required:
+        - orderId
+        - cardNumber
+        - amount
       properties:
-        id:
+        orderId:
           type: string
+          description: Identificador único do pedido
+        cardNumber:
+          type: string
+          description: Número do cartão de crédito
         amount:
           type: number
-        status:
+          format: double
+          description: Valor do pagamento
+        customerId:
           type: string
-    Error:
+          description: Identificador do cliente
+
+    PaymentResponse:
       type: object
       properties:
-        code:
-          type: integer
+        orderId:
+          type: string
+          description: Identificador único do pedido
+        status:
+          type: string
+          enum: [PENDING, COMPLETED, FAILED, REFUNDED]
+          description: Status do pagamento
         message:
           type: string
+          description: Mensagem descritiva sobre o resultado do processamento
+        processedAt:
+          type: string
+          format: date-time
+          description: Data e hora do processamento

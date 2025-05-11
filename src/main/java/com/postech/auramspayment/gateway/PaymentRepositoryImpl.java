@@ -6,6 +6,10 @@ import com.postech.auramspayment.gateway.database.jpa.repository.PaymentJpaRepos
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
+import static org.modelmapper.Converters.Collection.map;
+
 @Service
 public class PaymentRepositoryImpl implements PaymentRepository {
 
@@ -18,9 +22,19 @@ public class PaymentRepositoryImpl implements PaymentRepository {
     }
 
     @Override
-    public void processPayment(Payment payment) {
-
-        PaymentEntity paymentEntity = modelMapper.map(payment, PaymentEntity.class);
+    public Payment save(Payment payment) {
+        PaymentEntity entity = modelMapper.map(payment, PaymentEntity.class);
+        entity = paymentJpaRepository.save(entity);
+        return modelMapper.map(entity, Payment.class);
     }
 
+    @Override
+    public Optional<Payment> findByOrderId(Long orderId) {
+        PaymentEntity entity = paymentJpaRepository.findByOrderId(orderId);
+        if (entity != null) {
+            Payment payment = modelMapper.map(entity, Payment.class);
+            return Optional.of(payment);
+        }
+        return Optional.empty();
+    }
 }

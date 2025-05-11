@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public class Payment {
     private Long id;
-    private String orderId;
+    private Long orderId;
     private String cardNumber;
     private BigDecimal amount;
     private PaymentStatus status;
@@ -19,7 +19,7 @@ public class Payment {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Payment(Long id, String orderId, String cardNumber, BigDecimal amount, PaymentStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Payment(Long id, Long orderId, String cardNumber, BigDecimal amount, PaymentStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("O valor do pagamento deve ser maior que zero.");
         }
@@ -43,11 +43,11 @@ public class Payment {
         this.id = id;
     }
 
-    public String getOrderId() {
+    public Long getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(String orderId) {
+    public void setOrderId(Long orderId) {
         this.orderId = orderId;
     }
 
